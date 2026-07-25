@@ -22,6 +22,19 @@ function App() {
         setItems((prev) => [...prev, newItem]);
     };
 
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                setItems((prev) => prev.filter((item) => item._id !== id));
+            }
+        } catch (err) {
+            console.error('Error deleting item:', err);
+        }
+    };
+
     return (
         <div className="app-container">
             <h2>MERN Stack App</h2>
@@ -35,9 +48,12 @@ function App() {
             ) : (
                 <ul className="item-list">
                     {items.map((item) => (
-                        <li key={item._id} className="item-card">
-                            <strong>{item.name}</strong>
-                            <p>{item.description}</p>
+                        <li key={item._id} className="item-card item-row">
+                            <div>
+                                <strong>{item.name}</strong>
+                                <p>{item.description}</p>
+                            </div>
+                            <button className="delete-btn" onClick={() => handleDelete(item._id)}>Delete</button>
                         </li>
                     ))}
                 </ul>
