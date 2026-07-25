@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 const INITIAL_FORM_STATE = { name: '', description: '' };
 
 const FORM_FIELDS = [
@@ -10,6 +9,7 @@ const FORM_FIELDS = [
 
 function AddForm({ onItemAdded }) {
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+    const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -18,22 +18,33 @@ function AddForm({ onItemAdded }) {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleFileChange = (e) => {
+        setImage(e.target.files[0]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
+            const data = new FormData();
+            data.append('name', formData.name);
+            data.append('description', formData.description);
+            if (image) {
+                data.append('image', image);
+            }
+
             const response = await fetch('http://localhost:5000/api/items', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: data,
             });
 
             if (!response.ok) throw new Error('Failed to submit data');
 
             const result = await response.json();
             setFormData(INITIAL_FORM_STATE);
+            setImage(null);
             if (onItemAdded) onItemAdded(result);
 
         } catch (err) {
@@ -60,6 +71,14 @@ function AddForm({ onItemAdded }) {
                     />
                 </div>
             ))}
+
+            <div className="form-group">
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                />
+            </div>
 
             <button type="submit" disabled={loading}>
                 {loading ? 'Submitting...' : 'Submit'}

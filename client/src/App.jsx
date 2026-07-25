@@ -94,9 +94,14 @@ function App() {
                                 </div>
                             ) : (
                                 <div className="item-row">
-                                    <div>
-                                        <strong>{item.name}</strong>
-                                        <p>{item.description}</p>
+                                    <div className="item-details">
+                                        {item.imageUrl && (
+                                            <img src={item.imageUrl} alt={item.name} className="item-thumbnail" />
+                                        )}
+                                        <div>
+                                            <strong>{item.name}</strong>
+                                            <p>{item.description}</p>
+                                        </div>
                                     </div>
                                     <div className="btn-group">
                                         <button className="edit-btn" onClick={() => handleEditClick(item)}>Edit</button>

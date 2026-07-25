@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
+const upload = require('../middleware/upload'); 
 
 router.get('/items', async (req, res) => {
     try {
@@ -11,9 +12,13 @@ router.get('/items', async (req, res) => {
     }
 });
 
-router.post('/items', async (req, res) => {
+router.post('/items', upload.single('image'), async (req, res) => {
     try {
-        const newItem = new Item(req.body);
+        const newItem = new Item({
+            name: req.body.name,
+            description: req.body.description,
+            imageUrl: req.file ? req.file.path : '' 
+        });
         const savedItem = await newItem.save();
         res.status(201).json(savedItem);
     } catch (err) {
