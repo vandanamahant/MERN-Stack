@@ -33,4 +33,21 @@ router.delete('/items/:id', async (req, res) => {
     }
 });
 
+router.put('/items/:id', async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        const updatedItem = await Item.findByIdAndUpdate(
+            req.params.id,
+            { name, description },
+            { new: true }
+        );
+        if (!updatedItem) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        res.json(updatedItem);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

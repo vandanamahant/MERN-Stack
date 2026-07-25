@@ -4,6 +4,9 @@ import AddForm from './components/AddForm';
 function App() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [editingId, setEditingId] = useState(null);
+    const [editName, setEditName] = useState('');
+    const [editDescription, setEditDescription] = useState('');
 
     useEffect(() => {
         fetch('http://localhost:5000/api/items')
@@ -35,6 +38,29 @@ function App() {
         }
     };
 
+    const handleEditClick = (item) => {
+        setEditingId(item._id);
+        setEditName(item.name);
+        setEditDescription(item.description || '');
+    };
+
+    const handleUpdate = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: editName, description: editDescription }),
+            });
+            const updatedItem = await response.json();
+            if (response.ok) {
+                setItems((prev) => prev.map((item) => (item._id === id ? updatedItem : item)));
+                setEditingId(null);
+            }
+        } catch (err) {
+            console.error('Error updating item:', err);
+        }
+    };
+
     return (
         <div className="app-container">
             <h2>MERN Stack App</h2>
@@ -48,12 +74,36 @@ function App() {
             ) : (
                 <ul className="item-list">
                     {items.map((item) => (
-                        <li key={item._id} className="item-card item-row">
-                            <div>
-                                <strong>{item.name}</strong>
-                                <p>{item.description}</p>
-                            </div>
-                            <button className="delete-btn" onClick={() => handleDelete(item._id)}>Delete</button>
+                        <li key={item._id} className="item-card">
+                            {editingId === item._id ? (
+                                <div className="edit-form">
+                                    <input
+                                        type="text"
+                                        value={editName}
+                                        onChange={(e) => setEditName(e.target.value)}
+                                    />
+                                    <input
+                                        type="text"
+                                        value={editDescription}
+                                        onChange={(e) => setEditDescription(e.target.value)}
+                                    />
+                                    <div className="btn-group">
+                                        <button onClick={() => handleUpdate(item._id)}>Save</button>
+                                        <button className="cancel-btn" onClick={() => setEditingId(null)}>Cancel</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="item-row">
+                                    <div>
+                                        <strong>{item.name}</strong>
+                                        <p>{item.description}</p>
+                                    </div>
+                                    <div className="btn-group">
+                                        <button className="edit-btn" onClick={() => handleEditClick(item)}>Edit</button>
+                                        <button className="delete-btn" onClick={() => handleDelete(item._id)}>Delete</button>
+                                    </div>
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
