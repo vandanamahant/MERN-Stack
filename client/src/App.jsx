@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AddForm from './components/AddForm';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 function App() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ function App() {
     const [editDescription, setEditDescription] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/items')
+        fetch(`${API_URL}/api/items`)
             .then((res) => res.json())
             .then((data) => {
                 setItems(data);
@@ -27,7 +29,7 @@ function App() {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+            const response = await fetch(`${API_URL}/api/items/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -46,7 +48,7 @@ function App() {
 
     const handleUpdate = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+            const response = await fetch(`${API_URL}/api/items/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: editName, description: editDescription }),
