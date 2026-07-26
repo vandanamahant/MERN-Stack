@@ -10,9 +10,12 @@ app.use(express.json());
 
 app.use('/api', itemRoutes);
 
-mongoose.connect('mongodb://localhost:27017/mern-db')
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mern-db';
+
+mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('Connected to MongoDB');
-        app.listen(5000, () => console.log('Server running on port 5000'));
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
     .catch((err) => console.error(err));
