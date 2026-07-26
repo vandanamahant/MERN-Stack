@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 const INITIAL_FORM_STATE = { name: '', description: '' };
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const FORM_FIELDS = [
     { id: 'name', label: 'Name', type: 'text', placeholder: 'Enter name...' },
     { id: 'description', label: 'Description', type: 'text', placeholder: 'Enter description...' }
@@ -35,7 +37,7 @@ function AddForm({ onItemAdded }) {
                 data.append('image', image);
             }
 
-            const response = await fetch('http://localhost:5000/api/items', {
+            const response = await fetch(`${API_URL}/api/items`, {
                 method: 'POST',
                 body: data,
             });
